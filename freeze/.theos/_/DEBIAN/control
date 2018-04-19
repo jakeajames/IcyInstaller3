@@ -1,0 +1,11 @@
+Package: com.artikus.freeze
+Name: freeze
+Depends: 
+Architecture: iphoneos-arm
+Description: An awesome tool of some sort!!
+Maintainer: ArtikusHG
+Author: ArtikusHG
+Section: System
+Tag: role::hacker
+Version: 0.0.1-14+debug
+Installed-Size: 196
