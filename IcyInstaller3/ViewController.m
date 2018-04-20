@@ -53,16 +53,16 @@ int packageIndex;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Get value of darkMode
-    darkMode = [[NSUserDefaults standardUserDefaults] valueForKey:@"darkMode"];
+    darkMode = [[NSUserDefaults standardUserDefaults] boolForKey:@"darkMode"];
     // Stuff for downloading with progress
     self.downloadedMutableData = [[NSMutableData alloc] init];
     // The button at the right
     aboutButton = [[UIButton alloc]initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width - 120,33,75,30)];
     aboutButton.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.1];
     if(darkMode) {
-        [aboutButton setTitle:@"Dark" forState:UIControlStateNormal];
+        [aboutButton setTitle:@"Light" forState:UIControlStateNormal];
     } else {
-        [aboutButton setTitle:@"L" forState:UIControlStateNormal];
+        [aboutButton setTitle:@"Dark" forState:UIControlStateNormal];
     }
     aboutButton.titleLabel.textColor = coolerBlueColor;
     [aboutButton addTarget:self action:@selector(about) forControlEvents:UIControlEventTouchUpInside];
@@ -85,11 +85,11 @@ int packageIndex;
     // The depiction webview
     depictionWebView = [[UIWebView alloc]initWithFrame:CGRectMake(0,120,[UIScreen mainScreen].bounds.size.width,[UIScreen mainScreen].bounds.size.height - 200)];
     [self.view addSubview:depictionWebView];
+    depictionWebView.hidden = YES;
     // Change the user agent to a desktop one, so when we view depictions "Open in Cydia" doesn't appear
     NSDictionary *dictionary = @{@"UserAgent": @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15"};
     [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
     [[NSUserDefaults standardUserDefaults] synchronize];
-    depictionWebView.hidden = YES;
     // Navigation, I guess
     navigationView = [[UIView alloc]initWithFrame:CGRectMake(0, [UIScreen mainScreen].bounds.size.height - 75, [UIScreen mainScreen].bounds.size.width, 75)];
     UIView *border = [[UIView alloc]initWithFrame:CGRectMake(0, 0, navigationView.frame.size.width, 1)];
@@ -158,6 +158,8 @@ int packageIndex;
     tableView3.dataSource = self;
     tableView3.backgroundColor = [UIColor whiteColor];*/
     
+    [tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    [tableView2 setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     [self.view addSubview:tableView];
     [self.view addSubview:tableView2];
     //[self.view addSubview:tableView3];
@@ -564,13 +566,15 @@ UIView *darkenView;
         [self installPackageWithProgressAndURLString:[searchFiles objectAtIndex:packageIndex] saveFilename:@"downloaded.deb"];
         nameLabel.text = @"Getting...";
         descLabel.text = @"Downloading and installing...";
-    } else {
+    } else if([aboutButton.currentTitle isEqualToString:@"Backup"]){
         pid_t pid;
         int status;
         const char *argv[] = {"bash", "-c", "dpkg -l > /var/mobile/IcyBackup.txt", NULL};
         posix_spawn(&pid, "/bin/bash", NULL, NULL, (char* const*)argv, NULL);
         waitpid(pid, &status, 0);
         [self messageWithTitle:@"Done" message:@"The package backup was saved to /var/mobile/IcyBackup.txt"];
+    } else {
+        [self messageWithTitle:@"Some random shit happened" message:@"Literally the title."];
     }
 }
 
